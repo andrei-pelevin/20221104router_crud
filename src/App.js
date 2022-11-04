@@ -1,24 +1,48 @@
-import logo from './logo.svg';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
+import Navbar from './components/Navbar/Navbar';
+import NewPost from './components/NewPost/NewPost';
+import PostsList from './components/PostsList/PostsList';
+import ShowPost from './components/ShowPost/ShowPost';
+import EditPost from './components/EditPost/EditPost';
+import { useState } from 'react';
+
 
 function App() {
+  const [state, setState] = useState(0)
+  const [posts, setPosts] = useState([]);
+
+
+  const data = async () => {
+    try {
+      const response = await fetch(`http://localhost:7777/posts`);
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data = await response.json();
+      setPosts(data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  data();
+
+
+
+
   return (
+
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<PostsList posts={posts} />} />
+        <Route path="/posts/new" element={<NewPost state={state} setState={setState} />} />
+        <Route path="/edit/:rID" element={<EditPost state={state} setState={setState} />} />
+        <Route path="/posts/:rID" element={<ShowPost />} />
+      </Routes>
     </div>
+
+
   );
 }
 
